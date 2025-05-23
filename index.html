@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kirby-liknande Spel</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -10,8 +10,20 @@
     <div class="game-container">
         <canvas id="game-canvas"></canvas>
         <div class="controls-info">
-            <p>Kontroller: Piltangenter för att röra sig, Mellanslag för att hoppa, Nedåtpil för att ducka</p>
+            <p>Kontroller: Piltangenter/touchknappar för att röra sig, Mellanslag/Hoppa-knapp för att hoppa, Nedåtpil/Ducka-knapp för att ducka</p>
             <p>Mål: Hoppa mellan plattformarna för att nå den gula flaggan!</p>
+        </div>
+        <div id="mobile-controls" class="mobile-controls">
+            <div class="control-group left">
+                <button id="btn-left" class="control-btn">←</button>
+            </div>
+            <div class="control-group right">
+                <button id="btn-right" class="control-btn">→</button>
+            </div>
+            <div class="control-group actions">
+                <button id="btn-jump" class="control-btn">Hoppa</button>
+                <button id="btn-duck" class="control-btn">Ducka</button>
+            </div>
         </div>
     </div>
     

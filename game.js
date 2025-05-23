@@ -10,6 +10,13 @@ class Game {
         this.renderer = new Renderer(canvasId);
         this.player = new Player(50, 300);
         this.keys = {};
+        this.touchControls = {
+            left: false,
+            right: false,
+            jump: false,
+            duck: false
+        };
+        this.isMobile = this.detectMobile();
         this.platforms = [
             { x: 0, y: 550, width: 800, height: 50 }, // Marken
             { x: 150, y: 450, width: 100, height: 20 },
@@ -27,6 +34,18 @@ class Game {
         // Lägg till event listeners för tangentbord
         window.addEventListener('keydown', (e) => this.handleKeyDown(e));
         window.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        
+        // Lägg till touch event listeners om det är en mobil enhet
+        if (this.isMobile) {
+            this.setupTouchControls();
+        }
+        
+        // Hantera fönsterändring
+        window.addEventListener('resize', () => {
+            this.renderer.resizeCanvas();
+            this.isMobile = this.detectMobile();
+            this.updateTouchControlsVisibility();
+        });
     }
     
     start() {
@@ -117,21 +136,21 @@ class Game {
     
     handleInput() {
         // Rörelse vänster/höger
-        if (this.keys['ArrowLeft']) {
+        if (this.keys['ArrowLeft'] || this.touchControls.left) {
             this.player.moveLeft();
-        } else if (this.keys['ArrowRight']) {
+        } else if (this.keys['ArrowRight'] || this.touchControls.right) {
             this.player.moveRight();
         } else {
             this.player.stopMoving();
         }
         
         // Hoppa
-        if (this.keys[' ']) {
+        if (this.keys[' '] || this.touchControls.jump) {
             this.player.jump();
         }
         
         // Ducka
-        if (this.keys['ArrowDown']) {
+        if (this.keys['ArrowDown'] || this.touchControls.duck) {
             this.player.duck();
         } else {
             this.player.stopDucking();
@@ -321,5 +340,85 @@ class Game {
     
     handleKeyUp(e) {
         this.keys[e.key] = false;
+    }
+    
+    detectMobile() {
+        return (
+            navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/webOS/i) ||
+            navigator.userAgent.match(/iPhone/i) ||
+            navigator.userAgent.match(/iPad/i) ||
+            navigator.userAgent.match(/iPod/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/Windows Phone/i) ||
+            (window.innerWidth <= 800)
+        );
+    }
+    
+    updateTouchControlsVisibility() {
+        const mobileControls = document.getElementById('mobile-controls');
+        if (mobileControls) {
+            mobileControls.style.display = this.isMobile ? 'flex' : 'none';
+        }
+    }
+    
+    setupTouchControls() {
+        // Visa mobila kontroller
+        this.updateTouchControlsVisibility();
+        
+        // Konfigurera touch-knappar
+        const leftBtn = document.getElementById('btn-left');
+        const rightBtn = document.getElementById('btn-right');
+        const jumpBtn = document.getElementById('btn-jump');
+        const duckBtn = document.getElementById('btn-duck');
+        
+        // Vänster knapp
+        leftBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.touchControls.left = true;
+        });
+        leftBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.touchControls.left = false;
+        });
+        
+        // Höger knapp
+        rightBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.touchControls.right = true;
+        });
+        rightBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.touchControls.right = false;
+        });
+        
+        // Hopp knapp
+        jumpBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.touchControls.jump = true;
+        });
+        jumpBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.touchControls.jump = false;
+        });
+        
+        // Duck knapp
+        duckBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.touchControls.duck = true;
+        });
+        duckBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.touchControls.duck = false;
+        });
+        
+        // Förhindra att canvas-element scrollar sidan på touch
+        this.renderer.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+        
+        this.renderer.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, { passive: false });
     }
 }

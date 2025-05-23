@@ -7,12 +7,16 @@ body {
     height: 100vh;
     background-color: #87CEEB;
     font-family: Arial, sans-serif;
+    overflow: hidden;
+    touch-action: none;
 }
 
 .game-container {
     position: relative;
     width: 800px;
     height: 600px;
+    max-width: 100%;
+    max-height: 80vh;
 }
 
 #game-canvas {
@@ -21,6 +25,7 @@ body {
     background-color: #333;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    touch-action: none;
 }
 
 .controls-info {
@@ -29,8 +34,87 @@ body {
     width: 100%;
     text-align: center;
     color: #333;
+    font-size: 14px;
 }
 
 .controls-info p {
     margin: 5px 0;
+}
+
+.mobile-controls {
+    display: none;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+.control-group {
+    display: flex;
+}
+
+.control-group.left, .control-group.right {
+    flex: 1;
+    justify-content: center;
+}
+
+.control-group.actions {
+    flex: 2;
+    justify-content: center;
+    gap: 10px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 2px solid #333;
+    border-radius: 50%;
+    font-size: 20px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.control-group.actions .control-btn {
+    width: 80px;
+    border-radius: 30px;
+    font-size: 16px;
+}
+
+@media (max-width: 800px) {
+    body {
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+    
+    .game-container {
+        height: 70vh;
+    }
+    
+    .controls-info {
+        font-size: 12px;
+        bottom: -40px;
+    }
+}
+
+@media (max-height: 600px) {
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+    
+    .control-group.actions .control-btn {
+        width: 70px;
+        font-size: 14px;
+    }
 }
