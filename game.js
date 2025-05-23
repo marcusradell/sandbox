@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
 class Game {
     constructor(canvasId) {
         this.renderer = new Renderer(canvasId);
+        this.worldWidth = 800;
+        this.worldHeight = 600;
         this.player = new Player(50, 300);
         this.keys = {};
         this.touchControls = {
@@ -49,9 +51,13 @@ class Game {
         // Hantera fönsterändring
         window.addEventListener('resize', () => {
             this.renderer.resizeCanvas();
+            this.updateViewport();
             this.isMobile = this.detectMobile();
             this.updateTouchControlsVisibility();
         });
+        
+        // Initiera viewport
+        this.updateViewport();
     }
     
     start() {
@@ -186,19 +192,25 @@ class Game {
         // Använd en gul färg för målet
         const goalColor = [1.0, 1.0, 0.0, 1.0];
         
-        // Rita en rektangel för målet med kameraoffset
-        const x = this.goal.x - this.camera.x;
-        const y = this.goal.y - this.camera.y;
+        // Beräkna skalfaktorer för att konvertera från världskoordinater till skärmkoordinater
+        const scaleX = this.camera.width / this.camera.viewWidth;
+        const scaleY = this.camera.height / this.camera.viewHeight;
+        
+        // Rita en rektangel för målet med kameraoffset och skalning
+        const x = (this.goal.x - this.camera.x) * scaleX;
+        const y = (this.goal.y - this.camera.y) * scaleY;
+        const width = this.goal.width * scaleX;
+        const height = this.goal.height * scaleY;
         
         // Rita en rektangel för målet
         const vertices = [
             x, y, 0,
-            x + this.goal.width, y, 0,
-            x + this.goal.width, y + this.goal.height, 0,
+            x + width, y, 0,
+            x + width, y + height, 0,
             
             x, y, 0,
-            x + this.goal.width, y + this.goal.height, 0,
-            x, y + this.goal.height, 0
+            x + width, y + height, 0,
+            x, y + height, 0
         ];
         
         const colors = [];
@@ -269,24 +281,30 @@ class Game {
         const groundColor = [0.4, 0.8, 0.2, 1.0];
         const platformColor = [0.6, 0.4, 0.2, 1.0];
         
+        // Beräkna skalfaktorer för att konvertera från världskoordinater till skärmkoordinater
+        const scaleX = this.camera.width / this.camera.viewWidth;
+        const scaleY = this.camera.height / this.camera.viewHeight;
+        
         // Rita alla plattformar
         for (let i = 0; i < this.platforms.length; i++) {
             const platform = this.platforms[i];
             const color = i === 0 ? groundColor : platformColor;
             
-            // Applicera kameraoffset
-            const x = platform.x - this.camera.x;
-            const y = platform.y - this.camera.y;
+            // Applicera kameraoffset och skalning
+            const x = (platform.x - this.camera.x) * scaleX;
+            const y = (platform.y - this.camera.y) * scaleY;
+            const width = platform.width * scaleX;
+            const height = platform.height * scaleY;
             
             // Skapa en rektangel med två trianglar
             const vertices = [
                 x, y, 0,
-                x + platform.width, y, 0,
-                x + platform.width, y + platform.height, 0,
+                x + width, y, 0,
+                x + width, y + height, 0,
                 
                 x, y, 0,
-                x + platform.width, y + platform.height, 0,
-                x, y + platform.height, 0
+                x + width, y + height, 0,
+                x, y + height, 0
             ];
             
             const colors = [];
@@ -379,18 +397,39 @@ class Game {
         }
     }
     
+    updateViewport() {
+        // Uppdatera kamerans dimensioner baserat på canvas storlek
+        this.camera.width = this.renderer.canvas.width;
+        this.camera.height = this.renderer.canvas.height;
+        
+        // Beräkna skala baserat på aspektförhållande
+        const worldAspect = this.worldWidth / this.worldHeight;
+        const screenAspect = this.camera.width / this.camera.height;
+        
+        // Justera kamerans synfält baserat på aspektförhållande
+        if (screenAspect > worldAspect) {
+            // Bredare skärm än världen
+            this.camera.viewWidth = this.worldHeight * screenAspect;
+            this.camera.viewHeight = this.worldHeight;
+        } else {
+            // Högre skärm än världen
+            this.camera.viewWidth = this.worldWidth;
+            this.camera.viewHeight = this.worldWidth / screenAspect;
+        }
+    }
+    
     updateCamera() {
         // Beräkna önskad kameraposition (centrerad på spelaren)
-        const targetX = this.player.x - this.camera.width / 2;
-        const targetY = this.player.y - this.camera.height / 2;
+        const targetX = this.player.x - this.camera.viewWidth / 2;
+        const targetY = this.player.y - this.camera.viewHeight / 2;
         
         // Mjuk kamerarörelse (lerp)
         this.camera.x += (targetX - this.camera.x) * 0.1;
         this.camera.y += (targetY - this.camera.y) * 0.1;
         
         // Begränsa kameran så att den inte visar utanför spelvärlden
-        this.camera.x = Math.max(0, Math.min(this.camera.x, 800 - this.camera.width));
-        this.camera.y = Math.max(0, Math.min(this.camera.y, 600 - this.camera.height));
+        this.camera.x = Math.max(0, Math.min(this.camera.x, this.worldWidth - this.camera.viewWidth));
+        this.camera.y = Math.max(0, Math.min(this.camera.y, this.worldHeight - this.camera.viewHeight));
     }
     
     setupTouchControls() {
