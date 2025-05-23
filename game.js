@@ -257,10 +257,10 @@ class Game {
             for (let j = 0; j < 6; j++) {
                 colors.push(...color);
             }
-        
-        // Bind position buffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.renderer.positionBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+            
+            // Bind position buffer
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.renderer.positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         
         // Bind color buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, this.renderer.colorBuffer);
@@ -298,20 +298,21 @@ class Game {
         );
         gl.enableVertexAttribArray(this.renderer.programInfo.attribLocations.vertexPosition);
         
-        // Sätt vertex color attribute
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.renderer.colorBuffer);
-        gl.vertexAttribPointer(
-            this.renderer.programInfo.attribLocations.vertexColor,
-            4,          // 4 komponenter per färg (RGBA)
-            gl.FLOAT,   // data är 32bit floats
-            false,      // ingen normalisering
-            0,          // ingen stride
-            0           // ingen offset
-        );
-        gl.enableVertexAttribArray(this.renderer.programInfo.attribLocations.vertexColor);
-        
-        // Rita trianglar
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
+            // Sätt vertex color attribute
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.renderer.colorBuffer);
+            gl.vertexAttribPointer(
+                this.renderer.programInfo.attribLocations.vertexColor,
+                4,          // 4 komponenter per färg (RGBA)
+                gl.FLOAT,   // data är 32bit floats
+                false,      // ingen normalisering
+                0,          // ingen stride
+                0           // ingen offset
+            );
+            gl.enableVertexAttribArray(this.renderer.programInfo.attribLocations.vertexColor);
+            
+            // Rita trianglar
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
     }
     
     handleKeyDown(e) {
