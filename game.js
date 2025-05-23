@@ -17,6 +17,12 @@ class Game {
             duck: false
         };
         this.isMobile = this.detectMobile();
+        this.camera = {
+            x: 0,
+            y: 0,
+            width: this.renderer.canvas.width,
+            height: this.renderer.canvas.height
+        };
         this.platforms = [
             { x: 0, y: 550, width: 800, height: 50 }, // Marken
             { x: 150, y: 450, width: 100, height: 20 },
@@ -97,6 +103,9 @@ class Game {
             this.goalReached = true;
             this.celebrationTimer = 0;
         }
+        
+        // Uppdatera kameran för att följa spelaren
+        this.updateCamera();
     }
     
     resetGame() {
@@ -168,7 +177,7 @@ class Game {
         this.drawGoal();
         
         // Rita spelaren
-        this.player.draw(this.renderer);
+        this.player.draw(this.renderer, this.camera);
     }
     
     drawGoal() {
@@ -177,15 +186,19 @@ class Game {
         // Använd en gul färg för målet
         const goalColor = [1.0, 1.0, 0.0, 1.0];
         
+        // Rita en rektangel för målet med kameraoffset
+        const x = this.goal.x - this.camera.x;
+        const y = this.goal.y - this.camera.y;
+        
         // Rita en rektangel för målet
         const vertices = [
-            this.goal.x, this.goal.y, 0,
-            this.goal.x + this.goal.width, this.goal.y, 0,
-            this.goal.x + this.goal.width, this.goal.y + this.goal.height, 0,
+            x, y, 0,
+            x + this.goal.width, y, 0,
+            x + this.goal.width, y + this.goal.height, 0,
             
-            this.goal.x, this.goal.y, 0,
-            this.goal.x + this.goal.width, this.goal.y + this.goal.height, 0,
-            this.goal.x, this.goal.y + this.goal.height, 0
+            x, y, 0,
+            x + this.goal.width, y + this.goal.height, 0,
+            x, y + this.goal.height, 0
         ];
         
         const colors = [];
@@ -261,15 +274,19 @@ class Game {
             const platform = this.platforms[i];
             const color = i === 0 ? groundColor : platformColor;
             
+            // Applicera kameraoffset
+            const x = platform.x - this.camera.x;
+            const y = platform.y - this.camera.y;
+            
             // Skapa en rektangel med två trianglar
             const vertices = [
-                platform.x, platform.y, 0,
-                platform.x + platform.width, platform.y, 0,
-                platform.x + platform.width, platform.y + platform.height, 0,
+                x, y, 0,
+                x + platform.width, y, 0,
+                x + platform.width, y + platform.height, 0,
                 
-                platform.x, platform.y, 0,
-                platform.x + platform.width, platform.y + platform.height, 0,
-                platform.x, platform.y + platform.height, 0
+                x, y, 0,
+                x + platform.width, y + platform.height, 0,
+                x, y + platform.height, 0
             ];
             
             const colors = [];
@@ -360,6 +377,20 @@ class Game {
         if (mobileControls) {
             mobileControls.style.display = this.isMobile ? 'flex' : 'none';
         }
+    }
+    
+    updateCamera() {
+        // Beräkna önskad kameraposition (centrerad på spelaren)
+        const targetX = this.player.x - this.camera.width / 2;
+        const targetY = this.player.y - this.camera.height / 2;
+        
+        // Mjuk kamerarörelse (lerp)
+        this.camera.x += (targetX - this.camera.x) * 0.1;
+        this.camera.y += (targetY - this.camera.y) * 0.1;
+        
+        // Begränsa kameran så att den inte visar utanför spelvärlden
+        this.camera.x = Math.max(0, Math.min(this.camera.x, 800 - this.camera.width));
+        this.camera.y = Math.max(0, Math.min(this.camera.y, 600 - this.camera.height));
     }
     
     setupTouchControls() {

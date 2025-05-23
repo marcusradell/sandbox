@@ -84,7 +84,7 @@ class Player {
         this.velocityX = 0;
     }
     
-    draw(renderer) {
+    draw(renderer, camera) {
         // Ändra färg om firande
         const color = this.isCelebrating ? 
             [1.0, 0.41 + Math.sin(this.celebrationPhase) * 0.2, 0.71, 1.0] : 
@@ -95,9 +95,13 @@ class Player {
             1.0 + Math.sin(this.celebrationPhase * 2) * 0.1 : 
             1.0;
         
+        // Applicera kameraoffset
+        const x = this.x - camera.x;
+        const y = this.y - camera.y;
+        
         renderer.drawCircle(
-            this.x, 
-            this.y, 
+            x, 
+            y, 
             this.radius * radiusModifier, 
             color,
             this.isDucking
@@ -106,11 +110,11 @@ class Player {
         // Rita ögon
         const eyeRadius = this.radius * 0.2;
         const eyeOffset = this.radius * 0.4;
-        const eyeY = this.y - this.radius * 0.1;
+        const eyeY = y - this.radius * 0.1;
         
         // Vänster öga
         renderer.drawCircle(
-            this.x - eyeOffset, 
+            x - eyeOffset, 
             eyeY, 
             eyeRadius, 
             [0, 0, 0, 1.0]
@@ -118,7 +122,7 @@ class Player {
         
         // Höger öga
         renderer.drawCircle(
-            this.x + eyeOffset, 
+            x + eyeOffset, 
             eyeY, 
             eyeRadius, 
             [0, 0, 0, 1.0]
@@ -127,32 +131,32 @@ class Player {
         // Rita mun
         if (this.isCelebrating) {
             // Extra glad mun när firande
-            const mouthY = this.y + this.radius * 0.3;
+            const mouthY = y + this.radius * 0.3;
             
             // Större mun när firande
             renderer.drawCircle(
-                this.x, 
+                x, 
                 mouthY, 
                 this.radius * 0.25, 
                 [0, 0, 0, 1.0]
             );
         } else if (!this.isDucking) {
             // Normal glad mun
-            const mouthY = this.y + this.radius * 0.3;
+            const mouthY = y + this.radius * 0.3;
             
             // Använd en liten cirkel för att representera munnen
             renderer.drawCircle(
-                this.x, 
+                x, 
                 mouthY, 
                 this.radius * 0.15, 
                 [0, 0, 0, 1.0]
             );
         } else {
             // Förvånad mun när ducking
-            const mouthY = this.y + this.radius * 0.4;
+            const mouthY = y + this.radius * 0.4;
             
             renderer.drawCircle(
-                this.x, 
+                x, 
                 mouthY, 
                 this.radius * 0.1, 
                 [0, 0, 0, 1.0]
