@@ -27,18 +27,6 @@ body {
     touch-action: none;
 }
 
-.controls-info {
-    position: absolute;
-    bottom: -60px;
-    width: 100%;
-    text-align: center;
-    color: #333;
-    font-size: 14px;
-}
-
-.controls-info p {
-    margin: 5px 0;
-}
 
 .mobile-controls {
     display: flex;
@@ -99,11 +87,6 @@ body {
     
     .game-container {
         height: 70vh;
-    }
-    
-    .controls-info {
-        font-size: 12px;
-        bottom: -40px;
     }
     
     .mobile-controls {
