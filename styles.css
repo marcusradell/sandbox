@@ -41,7 +41,7 @@ body {
 }
 
 .mobile-controls {
-    display: none;
+    display: flex;
     position: absolute;
     bottom: 10px;
     left: 0;
@@ -49,6 +49,7 @@ body {
     justify-content: space-between;
     padding: 0 10px;
     box-sizing: border-box;
+    z-index: 10;
 }
 
 .control-group {
@@ -81,6 +82,7 @@ body {
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .control-group.actions .control-btn {
@@ -102,6 +104,10 @@ body {
     .controls-info {
         font-size: 12px;
         bottom: -40px;
+    }
+    
+    .mobile-controls {
+        bottom: 20px;
     }
 }
 

@@ -391,9 +391,10 @@ class Game {
     }
     
     updateTouchControlsVisibility() {
+        // Always show controls regardless of device detection
         const mobileControls = document.getElementById('mobile-controls');
         if (mobileControls) {
-            mobileControls.style.display = this.isMobile ? 'flex' : 'none';
+            mobileControls.style.display = 'flex';
         }
     }
     
